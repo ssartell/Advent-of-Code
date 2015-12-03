@@ -1,6 +1,12 @@
 var R = require('ramda');
 
 var parseInput = R.split('');
+var i = 0;
+var floor = 1;
+
+function getIndex() {
+	return i;
+};
 var upOrDown = function(char) {
 	if (char === '(') {
 		return 1;
@@ -10,19 +16,13 @@ var upOrDown = function(char) {
 		return 0;
 	}
 };
-
-var i = 0;
-function getIndex() {
-	return i;
-};
-
-var floor = 1;
 function notBasement(char) {
 	floor += upOrDown(char);
 	i++;
 	return floor > 0;
 };
+var firstBasementIndex = R.compose(getIndex, R.takeWhile(notBasement));
 
-var solution = R.compose(getIndex, R.takeWhile(notBasement), parseInput);
+var solution = R.compose(firstBasementIndex, parseInput);
 
 module.exports = solution;
