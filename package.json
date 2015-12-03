@@ -1,0 +1,16 @@
+{
+  "name": "advent",
+  "version": "1.0.0",
+  "description": "",
+  "main": "day1.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "jQuery": "^1.7.4",
+    "q": "^1.4.1",
+    "ramda": "^0.18.0"
+  }
+}
