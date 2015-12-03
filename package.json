@@ -9,8 +9,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "jQuery": "^1.7.4",
-    "q": "^1.4.1",
     "ramda": "^0.18.0"
   }
 }
