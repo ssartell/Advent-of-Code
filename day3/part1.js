@@ -20,6 +20,7 @@ var verticalMove = function(char) {
 	}
 };
 var updateHistory = function(history, char) {
+	history.coords[history.x + ',' + history.y] = 1;	
 	var newX = history.x + horizontalMove(char);
 	var newY = history.y + verticalMove(char);
 	history.coords[newX + ',' + newY] = 1;
@@ -29,7 +30,7 @@ var updateHistory = function(history, char) {
 		coords: history.coords
 	};
 };
-var numberOfHouses = R.compose(R.add(1), R.prop('length'), R.keys, R.prop('coords'), R.reduce(updateHistory, {x:0, y:0, coords:{}}));
+var numberOfHouses = R.compose(R.prop('length'), R.keys, R.prop('coords'), R.reduce(updateHistory, {x:0, y:0, coords:{}}));
 var solution = R.compose(numberOfHouses, parseInput);
 
 module.exports = solution;
