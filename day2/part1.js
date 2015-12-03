@@ -1,8 +1,7 @@
 var R = require('ramda');
 
-var splitLines = R.split('\n');
-var splitX = R.split('x');
-var dimensionStringToInts = R.compose(R.map(parseInt), splitX);
+var dimensionStringToInts = R.compose(R.map(parseInt), R.split('x'));
+var parseInput = R.compose(R.map(dimensionStringToInts), R.split('\n'), R.trim);
 var sideLengths = function(array) {
 	return [
 		[array[0], array[1]],
@@ -14,7 +13,8 @@ var sideLengths = function(array) {
 var areaOfSides = R.compose(R.map(R.reduce(R.multiply, 1)), sideLengths);
 var sqFtFromSides = R.compose(R.sum, R.map(R.multiply(2)), areaOfSides);
 var sqFtFromSlack = R.compose(R.reduce(R.min, Infinity), areaOfSides);
-var sqFtFromPresent = R.converge(R.unapply(R.sum), [sqFtFromSlack, sqFtFromSides]);
-var solution = R.compose(R.sum, R.map(R.compose(sqFtFromPresent, dimensionStringToInts)), splitLines, R.trim);
+var sqFtOfWrappingPaperForPresent = R.converge(R.unapply(R.sum), [sqFtFromSlack, sqFtFromSides]);
+
+var solution = R.compose(R.sum, R.map(sqFtOfWrappingPaperForPresent), parseInput);
 
 module.exports = solution;

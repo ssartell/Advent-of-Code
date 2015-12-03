@@ -1,6 +1,6 @@
 var R = require('ramda');
 
-var splitChars = R.split('');
+var parseInput = R.split('');
 var upOrDown = function(char) {
 	if (char === '(') {
 		return 1;
@@ -23,6 +23,6 @@ function notBasement(char) {
 	return floor > 0;
 };
 
-var solution = R.compose(getIndex, R.takeWhile(notBasement), splitChars);
+var solution = R.compose(getIndex, R.takeWhile(notBasement), parseInput);
 
 module.exports = solution;
