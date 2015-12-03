@@ -11,7 +11,7 @@ var sideLengths = function(array) {
 };
 
 var areaOfSides = R.compose(R.map(R.reduce(R.multiply, 1)), sideLengths);
-var sqFtFromSides = R.compose(R.sum, R.map(R.multiply(2)), areaOfSides);
+var sqFtFromSides = R.compose(R.multiply(2), R.sum, areaOfSides);
 var sqFtFromSlack = R.compose(R.reduce(R.min, Infinity), areaOfSides);
 var sqFtOfWrappingPaperForPresent = R.converge(R.unapply(R.sum), [sqFtFromSlack, sqFtFromSides]);
 
