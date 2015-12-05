@@ -13,19 +13,17 @@ var boolToInt = function(bool) {
 var contains = R.curry(function(subStr, str) {
 	return str.indexOf(subStr) > -1;
 });
+var occurrences = R.curry(function(subStr, str) {
+	return R.match(new RegExp('(' + subStr + ')', 'g'), str).length;
+});
 
-var numberOf = R.compose(R.converge(R.unapply(R.sum)), R.map(R.curry(R.compose(boolToInt, contains))));
+var numberOf = R.compose(R.converge(R.unapply(R.sum)), R.map(occurrences));
 
-var containsThreeVowels = R.compose(R.gte(R.__, 3), trace, numberOf(vowels));
-var notContainsDisallowed = R.compose(R.equals(0), trace, numberOf(disallowed));
-var containsAnyDoubleLetters = R.compose(R.gt(R.__, 0), trace, numberOf(doubleLetters));
+var containsThreeVowels = R.compose(R.gte(R.__, 3), numberOf(vowels));
+var notContainsDisallowed = R.compose(R.equals(0), numberOf(disallowed));
+var containsAnyDoubleLetters = R.compose(R.gt(R.__, 0), numberOf(doubleLetters));
 
 var isNiceWord = R.allPass([containsThreeVowels, notContainsDisallowed, containsAnyDoubleLetters]);
 var solution = R.compose(R.sum, R.map(boolToInt), R.map(isNiceWord), parseInput);
-solution = R.always('okay');
-// console.log(containsThreeVowels('asdfe0'));
-// console.log(notContainsDisallowed('asdf'));
-// console.log(containsAnyDoubleLetters('aasdf'));
-console.log(isNiceWord('aaa'));
 
 module.exports = solution;
