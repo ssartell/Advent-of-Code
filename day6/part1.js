@@ -2,14 +2,15 @@ var R = require('ramda');
 
 var trace = R.tap(console.log);
 var debug = (a,b,c,d,e,f,g) => { debugger; return a; };
-var filterIndex = R.addIndex(R.filter);
 
-var parseInput = R.split('\n');
+var parseInput = R.compose(R.split('\n'), R.trim);
 var grid = R.times(R.compose(R.times(R.F), R.always(1000)), 1000);
 
-var applyFunc = R.curry(function(grid, func, coords) {
-	for(var i = coords[0]; i <= coords[2]; i++) {
-		for(var j = coords[1]; j <= coords[3]; j++) {
+var getCoords = R.compose(R.apply(R.zip), R.splitEvery(2), R.map(parseInt), R.match(/(\d+)/g));
+var applyFunc = R.curry(function(func, command, grid) {
+	var coords = getCoords(command);
+	for(var i = coords[0][0]; i <= coords[0][1]; i++) {
+		for(var j = coords[1][0]; j <= coords[1][1]; j++) {
 			grid[i][j] = func(grid[i][j]);
 		}
 	}
@@ -17,24 +18,14 @@ var applyFunc = R.curry(function(grid, func, coords) {
 	return grid;
 });
 
-var countGrid = function() {
-	var z = 0;
-	for(var i = 0; i <= 999; i++) {
-		for(var j = 0; j <= 999; j++) {
-			if (grid[i][j])
-				z++;
-		}
-	}
-	
-	return z;
-}
+var getAction = R.cond([
+	[R.test(/turn on/g), applyFunc(R.T)],
+	[R.test(/turn off/g), applyFunc(R.F)],
+	[R.test(/toggle/g), applyFunc(R.not)]
+])
+var callAction = R.flip(R.call);
+var countGrid = R.compose(R.sum, R.flatten);
 
-var getCoords = R.compose(R.map(parseInt), R.match(/(\d+)/g));
-var turnOn = R.when(R.test(/turn on/g), R.compose(applyFunc(grid, R.T), getCoords));
-var turnOff = R.when(R.test(/turn off/g), R.compose(applyFunc(grid, R.F), getCoords));
-var toggle = R.when(R.test(/toggle/g), R.compose(applyFunc(grid, R.not), getCoords));
-
-var solution = R.compose(countGrid, R.map(R.converge(R.always(0), [trace, turnOn, turnOff, toggle])), parseInput);
-//solution = R.always('asdf');
+var solution = R.compose(countGrid, R.reduce(callAction, grid), R.map(getAction), parseInput);
 
 module.exports = solution;
