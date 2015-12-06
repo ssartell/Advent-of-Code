@@ -1,15 +1,7 @@
 var R = require('ramda');
 
 var parseInput = R.split('');
-var upOrDown = function(char) {
-	if (char === '(') {
-		return 1;
-	} else if (char === ')') {
-		return -1;
-	} else {
-		return 0;
-	}
-};
+var upOrDown = (char) => (char === '(') ? 1 : (char === ')') ? -1 : 0;
 var updateFloor = function(accu, char) {
 	var floor = R.last(accu) + upOrDown(char);
 	return R.pair(R.append(floor, accu), floor);

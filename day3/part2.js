@@ -1,24 +1,9 @@
 var R = require('ramda');
 
 var parseInput = R.split('');
-var horizontalMove = function(char) {
-	if (char === '<') {
-		return -1;
-	} else if (char === '>') {
-		return 1;
-	} else {
-		return 0;
-	}
-};
-var verticalMove = function(char) {
-	if (char === '^') {
-		return -1;
-	} else if (char === 'v') {
-		return 1;
-	} else {
-		return 0;
-	}
-};
+
+var horizontal = (char) => (char === '<') ? -1 : (char === '>') ? 1 : 0;
+var vertical = (char) => (char === '^') ? -1 : (char === 'v') ? 1 : 0;
 var updateHistory = function(history, char) {
 	var pos = history.positions[history.turnIndex];
 	history.coords[pos.x + ',' + pos.y] = 1; // before
