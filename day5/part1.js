@@ -8,12 +8,10 @@ var doubleLetters = R.map(R.compose(R.apply(R.concat), R.flip(R.repeat)(2)), let
 var vowels = ['a', 'e', 'i', 'o', 'u'];
 var disallowed = ['ab', 'cd', 'pq', 'xy'];
 
-var boolToInt = function(bool) {
-	return +bool;
-};
-var occurrences = R.curry(function(subStr, str) {
-	return R.match(new RegExp('(' + subStr + ')', 'g'), str).length;
-});
+var boolToInt = (bool) => +bool;
+var toRegExp = R.compose(R.curry(RegExp)(R.__, 'g'), R.concat(R.__, ')'), R.concat('('));
+var matches = R.curry(R.binary(R.converge(R.match, [toRegExp, R.nthArg(1)])));
+var occurrences = R.curry(R.compose(R.prop('length'), matches));
 
 var numberOf = R.compose(R.converge(R.unapply(R.sum)), R.map(occurrences));
 
