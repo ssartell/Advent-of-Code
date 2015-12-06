@@ -1,18 +1,9 @@
 var R = require('ramda');
 var md5 = require('md5');
 
-var startsWithSixZeros = function(str) {
-	return str.substr(0, 6) === '000000';
-}
+var trace = R.tap(console.log);
+var startsWith = R.invoker(1, 'startsWith');
 
-var solution = function(key) {
-	var digit = 0;
-	
-	while (!startsWithSixZeros(md5(key + digit))) {
-		digit++;
-	}
-	
-	return digit;
-};
-
+var integers = R.times(R.identity, 1999999);
+var solution = R.compose(R.find(R.__, integers), R.curry(R.compose(startsWith('000000'), md5, R.concat)));
 module.exports = solution;

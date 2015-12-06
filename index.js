@@ -14,8 +14,8 @@ function run(day, part) {
 // run(3, 1);
 // run(3, 2);
 // run(4, 1);
-// run(4, 2);
-run(5, 1);
-run(5, 2);
+run(4, 2);
+// run(5, 1);
+// run(5, 2);
 
 process.exit();
