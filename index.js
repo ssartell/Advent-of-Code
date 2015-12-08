@@ -18,6 +18,8 @@ function run(day, part) {
 // run(5, 1);
 // run(5, 2);
 // run(6, 1);
-run(6, 2);
+// run(6, 2);
+run(7, 1);
+// run(7, 2);
 
 process.exit();
