@@ -15,22 +15,23 @@ var operations = {
 	undefined: (f, c) => f(c.i2)	
 };
 
-var isInputInteger = R.compose(R.not, isNaN, parseInt, R.nthArg(1));
-var inputToInteger = R.compose(parseInt, R.nthArg(1));
-var findConnection = R.memoize(R.useWith(R.flip(R.find), [R.identity, R.useWith(R.equals, [R.identity, R.prop('o')])]));
+var findConnection = R.memoize(R.useWith(R.find, [R.useWith(R.equals, [R.identity, R.prop('o')]), R.identity]));
 var getOperation = R.compose(R.prop(R.__, operations), R.prop('operator'), findConnection);
-var resolveInput;
-var callResolveInput = (x) => resolveInput(x); // hack for recursion
-resolveInput = R.curry(R.binary(R.memoize(
-	R.ifElse(isInputInteger, inputToInteger, R.converge(R.call, [getOperation, callResolveInput, findConnection]))
+var setupResolveInput = (x, y) => resolveInput(R.__, y); // hack for recursion
+var resolveInput = R.curry(R.binary(R.memoize(
+	R.ifElse(
+		R.compose(R.not, isNaN, parseInt), 
+		parseInt, 
+		R.converge(R.call, [getOperation, setupResolveInput, findConnection])
+	)
 )));
 
-var solution = R.compose(resolveInput(R.__, 'a'), parseInput);
+var solution = R.compose(resolveInput('a'), parseInput);
 
 module.exports = solution;
 
 
-// var resolveInput = R.curry(R.binary(R.memoize(function(connections, input) {
+// var resolveInput = R.curry(R.binary(R.memoize(function(input, connections) {
 // 	var result = parseInt(input);
 // 	
 // 	if (isNaN(result)) {

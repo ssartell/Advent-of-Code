@@ -3,53 +3,33 @@ var trace = R.tap(console.log);
 var debug = (a,b,c,d,e,f,g) => { debugger; return a; }
 
 var readConnection = (connection) => (/(?:(?:(\w+) )?(\w+) )?(\w+) -> (\w+)/g).exec(connection);
-var parseConnections = R.compose(R.zipObj(['input1', 'operator', 'input2', 'output']), R.tail, readConnection);
-var parseInput = R.compose(R.map(parseConnections), R.split('\n'), R.trim);
+var parseConnection = R.compose(R.zipObj(['i1', 'operator', 'i2', 'o']), R.tail, readConnection);
+var parseInput = R.compose(R.map(parseConnection), R.split('\n'), R.trim);
 
 var operations = {
-	'AND': function(resolveInput, connection) {
-		return resolveInput(connection.input1) & resolveInput(connection.input2);
-	},
-	'OR': function(resolveInput, connection) {
-		return resolveInput(connection.input1) | resolveInput(connection.input2);
-	},
-	'NOT': function(resolveInput, connection) {
-		return ~resolveInput(connection.input2);
-	},
-	'RSHIFT': function(resolveInput, connection) {
-		return resolveInput(connection.input1) >> resolveInput(connection.input2);
-	},
-	'LSHIFT': function(resolveInput, connection) {
-		return resolveInput(connection.input1) << resolveInput(connection.input2);
-	},
-	undefined: function(resolveInput, connection) {
-		return resolveInput(connection.input2);
-	}	
+	'AND': (f, c) => f(c.i1) & f(c.i2),
+	'OR': (f, c) =>  f(c.i1) | f(c.i2),
+	'NOT': (f, c) => ~f(c.i2),
+	'RSHIFT': (f, c) => f(c.i1) >> f(c.i2),
+	'LSHIFT': (f, c) => f(c.i1) << f(c.i2),
+	undefined: (f, c) => f(c.i2)	
 };
 
-var findOutputConnection = R.useWith(R.find, [R.useWith(R.equals, [R.identity, R.prop('output')]), R.identity]);
+var findConnection = R.memoize(R.useWith(R.find, [R.useWith(R.equals, [R.identity, R.prop('o')]), R.identity]));
+var getOperation = R.compose(R.prop(R.__, operations), R.prop('operator'), findConnection);
+var setupResolveInput = (x, y) => resolveInput(R.__, y); // hack for recursion
+var resolveInput = R.curry(R.binary(R.memoize(
+	R.ifElse(
+		R.equals('b'),
+		R.always(46065),
+		R.ifElse(
+			R.compose(R.not, isNaN, parseInt), 
+			parseInt, 
+			R.converge(R.call, [getOperation, setupResolveInput, findConnection])
+		)
+	)	
+)));
 
-var resolveInput = R.curry(R.binary(R.memoize(function(connections, input) {
-	var result = parseInt(input);
-	
-	if (input === 'b') return 46065;
-	
-	if (isNaN(result)) {
-		var connection = findOutputConnection(input, connections);
-		var operation = operations[connection.operator];
-		
-		result = operation(resolveInput(connections), connection);
-	}
-	return result;
-})));
-
-//resolveInput = R.useWith(R.call, [findOutputConnection, R.identity]);
-
-var solution = R.compose(resolveInput(R.__, 'a'), parseInput);
-//solution = R.always('a');
-
-// var test = 'bn RSHIFT 2 -> bo';
-// var input = parseInput(test);
-// console.log(findOutputConnection('bo')(input)); 
+var solution = R.compose(resolveInput('a'), parseInput);
 
 module.exports = solution;
