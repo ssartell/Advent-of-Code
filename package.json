@@ -11,5 +11,6 @@
   "dependencies": {
     "md5": "^2.0.0",
     "ramda": "^0.18.0"
-  }
+  },
+  "devDependencies": {}
 }
