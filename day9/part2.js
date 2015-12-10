@@ -2,40 +2,32 @@ var R = require('ramda');
 var trace = R.tap(console.log);
 
 var parseLine = (line) => (/(\w+) to (\w+) = (\d+)/gi).exec(line);
-var readLine = R.compose(R.zipObj(['a', 'b', 'distance']), R.tail, parseLine);
+var readLine = R.compose(R.zipObj(['a', 'b', 'distance']),  R.tail, parseLine);
 var parseInput = R.compose(R.map(readLine), R.split('\n'), R.trim);
 
 var uniqLocations = R.compose(R.uniq, R.converge(R.concat, [R.pluck('a'), R.pluck('b')]));
+var getDistance = R.curry((edges, locations) => {
+	var edge = R.find((edge) => (edge.a === locations[0] && edge.b === locations[1]) || (edge.a === locations[1] && edge.b === locations[0]), edges);
+	return parseInt(edge.distance);
+});
 
-var getDistance = (edges, a, b) => {
-	return parseInt(R.find(
-		(edge) => (edge.a === a && edge.b === b) || (edge.a === b && edge.b ===a),
-		edges
-	).distance);
+var without = R.curry((xs, x) => {
+	return R.filter(y => x !== y, xs);
+});
+
+var permutations = (xs) => {
+	if (xs.length === 1) return [xs]; 
+	return R.unnest(R.map(x => R.map(R.unnest, R.xprod([x], permutations(without(xs, x)))), xs));
 };
 
 var solution = (input) => {
 	var edges = parseInput(input);
 	var locations = uniqLocations(edges);
+	var paths = permutations(locations);
+	var sumTotalDistance = R.compose(R.sum, R.map(getDistance(edges)), R.converge(R.zip, [R.dropLast(1), R.tail]));
+	var max = R.compose(R.reduce(R.max, -Infinity), R.map(sumTotalDistance))(paths);
 	
-	var findShortestDistance = function(remainingLocations, a, distance) {
-		if (remainingLocations.length === 0) 
-			return distance;
-		
-		var shortestDistance = -Infinity;
-		for(var i = 0; i < remainingLocations.length; i++) {
-			var b = remainingLocations[i];
-			var newDistance = distance + (a ? getDistance(edges, a, b) : 0);
-			var totalDistance = findShortestDistance(R.remove(i, 1, remainingLocations), b, newDistance);
-			
-			if (totalDistance > shortestDistance)
-				shortestDistance = totalDistance;
-		}
-		
-		return shortestDistance;
-	};
-	
-	return findShortestDistance(locations, null, 0);
+	return max;
 };
 
 module.exports = solution;

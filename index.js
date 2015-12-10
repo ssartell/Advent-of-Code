@@ -24,7 +24,7 @@ function run(day, part) {
 // run(7, 2);
 // run(8, 1);
 // run(8, 2);
-run(9, 1);
-// run(9, 2);
+// run(9, 1);
+run(9, 2);
 
 process.exit();
