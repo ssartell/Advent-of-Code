@@ -1,3 +1,4 @@
+var R = require('ramda');
 var fs = require('fs');
 
 function run(day, part) {
@@ -19,11 +20,11 @@ function run(day, part) {
 // run(5, 2);
 // run(6, 1);
 // run(6, 2);
-run(7, 1);
+// run(7, 1);
 // run(7, 2);
 // run(8, 1);
 // run(8, 2);
-// run(9, 1);
+run(9, 1);
 // run(9, 2);
 
 process.exit();
