@@ -1,19 +1,6 @@
 var R = require('ramda');
 var trace = R.tap(console.log);
 var debug = (a,b,c,d,e,f,g) => { console.log(times); debugger; return a; }
-var logTime = (a,b,c,d,e,f,g) => { console.log(times); return a; }
-
-var getTime = () => (new Date()).getTime();
-var times = {};
-var time = function(f, name) {
-	return function() {
-		var start = getTime();
-		var result = f.apply(null, arguments);
-		var end = getTime();
-		times[name] = (times[name] || 0) + (end - start);
-		return result;
-	};
-};
 
 var readConnection = (connection) => (/(?:(?:(\w+) )?(\w+) )?(\w+) -> (\w+)/g).exec(connection);
 var parseConnection = R.compose(R.converge(R.concat, [R.compose(R.of, R.prop('o')), R.compose(R.of, R.identity)]), R.zipObj(['i1', 'operator', 'i2', 'o']), R.tail, readConnection);
@@ -45,17 +32,11 @@ var resolveInput = R.memoize(function(input) {
 	return result;
 });
 
-
-var setup = function(input, loadedFindConnection) {
-	findConnection = loadedFindConnection;
-	return resolveInput(input);
-}
-
-var solution = R.compose(
-	R.converge(R.call, [R.always(setup), R.always('a'), R.identity]),
-	findConnection,
-	parseInput
-);
+var solution = (input) => {
+	var connections = parseInput(input);
+	findConnection = findConnection(connections);
+	return resolveInput('a');
+};
 
 module.exports = solution;
 
