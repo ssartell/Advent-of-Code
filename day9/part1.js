@@ -23,9 +23,9 @@ var permutations = (xs) => {
 var solution = (input) => {
 	var edges = parseInput(input);
 	var locations = uniqLocations(edges);
-	var paths = permutations(locations);
+	var possiblePaths = permutations(locations);
 	var sumTotalDistance = R.compose(R.sum, R.map(getDistance(edges)), R.converge(R.zip, [R.dropLast(1), R.tail]));
-	var max = R.compose(R.reduce(R.min, Infinity), R.map(sumTotalDistance))(paths);
+	var max = R.compose(R.reduce(R.min, Infinity), R.map(sumTotalDistance))(possiblePaths);
 	
 	return max;
 };
