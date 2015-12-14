@@ -11,10 +11,7 @@ var getDistance = R.curry((edges, locations) => {
 	return parseInt(edge.distance);
 });
 
-var without = R.curry((xs, x) => {
-	return R.filter(y => x !== y, xs);
-});
-
+var without = R.useWith(R.reject, [R.equals, R.identity]);
 var permutations = (xs) => {
 	if (xs.length === 1) return [xs]; 
 	return R.unnest(R.map(x => R.map(R.unnest, R.xprod([x], permutations(without(xs, x)))), xs));

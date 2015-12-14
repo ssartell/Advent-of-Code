@@ -1,7 +1,14 @@
 var R = require('ramda');
 var fs = require('fs');
 
+function pad(digit, width, char) {
+  char = char || '0';
+  digit = digit + '';
+  return digit.length >= width ? digit : new Array(width - digit.length + 1).join(char) + digit;
+}
+
 function run(day, part) {
+	day = pad(day, 2);
 	var input = fs.readFileSync('day' + day + '/input.txt', 'utf8');
 	var solution = require('./day' + day + '/part' + part);
 	
@@ -25,6 +32,14 @@ function run(day, part) {
 // run(8, 1);
 // run(8, 2);
 // run(9, 1);
-run(9, 2);
+// run(9, 2);
+// run(10, 1);
+// run(10, 2);
+// run(11, 1);
+// run(11, 2);
+// run(12, 1);
+// run(12, 2);
+// run(13, 1);
+run(13, 2);
 
 process.exit();
