@@ -44,13 +44,14 @@ module.exports = solution;
 // var trace = R.tap(console.log);
 // 
 // var parseInput = R.compose(parseInt, R.trim);
-// var thing = R.memoize((f) => (Math.pow(f.prime, f.power + 1) - 1) / (f.prime - 1));
-// var getPresents = R.compose(R.reduce(R.multiply, 1), R.map(thing), factor);
+// var thing = R.memoize((prime, power) => (Math.pow(prime, power + 1) - 1) / (prime - 1));
+// var callThing = (factor) => thing(factor.prime, factor.power);
+// var getPresents = R.compose(R.reduce(R.multiply, 1), R.map(callThing), factor);
 // 
 // var solution = (input) => {
 //     var presents = parseInput(input) / 10;
 //     
-//     for(var i = 99999; i <= 9999999; i++) {
+//     for(var i = 1; i <= 999999; i++) {
 //         if (getPresents(i) > presents) return i;
 //     }
 // };
