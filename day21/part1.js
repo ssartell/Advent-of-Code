@@ -35,7 +35,6 @@ var parseInput = R.compose(R.apply(parseSections), R.split('\n\n'), R.trim);
 
 // Game simulation
 // -------------------------------------------------------------------------------------
-
 var player = {
     hitPoints: 100,
     items: []
@@ -43,7 +42,7 @@ var player = {
 
 var sumItemStats = R.compose(R.sum, R.useWith(R.map, [R.prop, R.prop('items')]));
 
-var fight = (player, boss) => {
+var playerWinsFight = (player, boss) => {
     var hitPoints = [player.hitPoints, boss.hitPoints];
     var damage = [sumItemStats('damage', player), boss.damage];
     var armor = [sumItemStats('armor', player), boss.armor];
@@ -73,13 +72,12 @@ var solution = (input) => {
                         gameInfo.rings[r2]
                     ];
                     
-                    if (fight(player, gameInfo.boss))
+                    if (playerWinsFight(player, gameInfo.boss))
                         winCosts.push(sumItemStats('cost', player));
                 }
             }
         }
-    }
-    
+    }    
     
     return R.reduce(R.min, Infinity, winCosts);
 };
