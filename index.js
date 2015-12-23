@@ -1,5 +1,6 @@
 var R = require('ramda');
 var fs = require('fs');
+var _ = require('./scratchpad');
 
 function pad(digit, width, char) {
   char = char || '0';
@@ -15,6 +16,6 @@ function run(day, part) {
 	console.log('day ' + day + ', part ' + part + ': ' + solution(input));
 }
 
-run(21, 2);
+run(22, 1);
 
 process.exit();
