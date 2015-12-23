@@ -112,7 +112,6 @@ var randomFight = () => {
         hitPoints: 58,
         damage: 9
     };
-    //var spellsUsed = [];
     
     var manaSpent = 0;
     
@@ -120,7 +119,10 @@ var randomFight = () => {
     while(true) {
         R.forEach((spell) => spell.apply(), player.activeSpells);
         
-        if (isPlayersTurn) {            
+        if (isPlayersTurn) {  
+            player.hitPoints--;
+            if (player.hitPoints <= 0) return Infinity;
+                      
             var spell;
             var spellOptions = R.times(R.identity, spells.length);
             for(var i = 0; i < spells.length; i++) {
@@ -134,18 +136,13 @@ var randomFight = () => {
                 return Infinity;
             
             spell.cast();
-            //spellsUsed.push(spells[randomSpell].name);
             manaSpent += spell.mana;
         } else {
             player.hitPoints -= R.max(1, boss.damage - player.armor);
         }
         
-        if (player.hitPoints <= 0) 
-            return Infinity;
-        if (boss.hitPoints <= 0) {
-            //console.log(spellsUsed);
-            return manaSpent;
-        }
+        if (player.hitPoints <= 0) return Infinity;
+        if (boss.hitPoints <= 0) return manaSpent;
         
         isPlayersTurn = !isPlayersTurn;
     }
@@ -156,7 +153,7 @@ var sumMana = R.compose(R.sum, R.prop('mana'));
 var solution = (input) => {
     var costs = [];
     
-    for(var i = 0; i < 100000; i++) {
+    for(var i = 0; i < 99999; i++) {
         costs.push(randomFight());
     }
     
