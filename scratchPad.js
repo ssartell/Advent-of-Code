@@ -17,6 +17,11 @@ var subSets = (set) => {
     return R.concat(haves, haveNots);
 };
 
+var nChooseK = (set, k) => {
+    if (k === 0) return [[]];
+    return R.chain(x => R.map(R.unnest, R.xprod([x], nChooseK(set, k - 1))), set);
+}
+
 // var permutations = (xs) => {
 // 	if (xs.length === 1) return [xs]; 
 // 	

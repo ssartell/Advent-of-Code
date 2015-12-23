@@ -98,9 +98,7 @@ var resetTimers = () => {
     rechargeTimer = 0;
 };
 
-var spells = [createMagicMissile, createDrain, createShield, createPoison, createRecharge];
-
-var randomFight = () => {
+var fight = (spellCombo) => {
     resetTimers();
     var player = {
         hitPoints: 50,
@@ -113,49 +111,59 @@ var randomFight = () => {
         damage: 9
     };
     
-    var manaSpent = 0;
-    
+    var spentMana = 0;
+    var spellIndex = 0;
     var isPlayersTurn = true;
     while(true) {
         R.forEach((spell) => spell.apply(), player.activeSpells);
-        
-        if (isPlayersTurn) {            
-            var spell;
-            var spellOptions = R.times(R.identity, spells.length);
-            for(var i = 0; i < spells.length; i++) {
-                var randomSpell = Math.floor(Math.random() * spellOptions.length);
-                spell = spells[randomSpell](player, boss);
-                if (spell.canCast()) break;
-                spellOptions = R.remove(randomSpell, 1, spellOptions);
+        if (isPlayersTurn) {
+            if (spellCombo[spellIndex]) {
+                var spellFactory = spellCombo[spellIndex];
+                var spell = spellFactory(player, boss);
+                
+                if (!spell.canCast())
+                    return Infinity;
+                    
+                spell.cast();
+                spentMana += spell.mana;
+                spellIndex++;
             }
-            
-            if (spellOptions.length === 0)
-                return Infinity;
-            
-            spell.cast();
-            manaSpent += spell.mana;
         } else {
             player.hitPoints -= R.max(1, boss.damage - player.armor);
         }
         
-        if (player.hitPoints <= 0) return Infinity;
-        if (boss.hitPoints <= 0) return manaSpent;
+        if (player.hitPoints <= 0) 
+            return Infinity;
+        if (boss.hitPoints <= 0) {
+            console.log(R.map(R.prop('name'), spellCombo));
+            return spentMana;   
+        }
         
         isPlayersTurn = !isPlayersTurn;
     }
 };
 
+var nChooseK = (set, k) => {
+    if (k === 0) return [[]];
+    return R.chain(x => R.map(R.unnest, R.xprod([x], nChooseK(set, k - 1))), set);
+}
+
 var sumMana = R.compose(R.sum, R.prop('mana'));
 
 var solution = (input) => {
-    var costs = [];
+    var spells = [createMagicMissile, createDrain, createShield, createPoison, createRecharge];
+    var winCosts = [];
     
-    for(var i = 0; i < 99999; i++) {
-        costs.push(randomFight());
+    for(var i = 1; i < 7; i++) {
+        console.log(i);
+        var spellCombos = nChooseK(spells, i);
+        
+        for(var j = 0; j < spellCombos.length; j++) {
+            winCosts.push(fight(spellCombos[j]));
+        }
     }
     
-    console.log(costs.length);
-    return R.reduce(R.min, Infinity, costs);
+    return R.reduce(R.min, Infinity, winCosts);
 };
 
 module.exports = solution;
