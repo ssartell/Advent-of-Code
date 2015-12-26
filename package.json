@@ -9,6 +9,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "combinations": "^0.1.0",
+    "combinations-generator": "^1.0.1",
+    "combinations-js": "^1.1.2",
+    "lodash": "^3.10.1",
     "md5": "^2.0.0",
     "number-theory": "^1.0.0",
     "ramda": "^0.18.0"
