@@ -2,6 +2,7 @@ var R = require('ramda');
 
 var createMagicMissile = function createMagicMissile(player, boss) {
     return {
+        name: 'magic missile',
         mana: 53,
         canCast: function() {
             return player.mana >= this.mana;  
@@ -15,6 +16,7 @@ var createMagicMissile = function createMagicMissile(player, boss) {
 
 var createDrain = function createDrain(player, boss) {
     return {
+        name: 'drain',
         mana: 73,
         canCast: function() {
             return player.mana >= this.mana;  
@@ -30,6 +32,7 @@ var createDrain = function createDrain(player, boss) {
 var shieldTimer = 0;
 var createShield = function createShield(player, boss) {
     return {
+        name: 'shield',
         mana: 113,
         canCast: function() {
             return shieldTimer === 0 && player.mana >= this.mana;  
@@ -53,6 +56,7 @@ var createShield = function createShield(player, boss) {
 var poisonTimer = 0;
 var createPoison = function createPoison(player, boss) {
     return {
+        name: 'poison',
         mana: 173,
         canCast: function() {
             return poisonTimer === 0 && player.mana >= this.mana;  
@@ -74,6 +78,7 @@ var createPoison = function createPoison(player, boss) {
 var rechargeTimer = 0;
 var createRecharge = function createRecharge(player, boss) {
     return {
+        name: 'recharge',
         mana: 229,
         canCast: function() {
             return rechargeTimer === 0 && player.mana >= this.mana;  
@@ -112,6 +117,8 @@ var randomFight = () => {
         hitPoints: 58,
         damage: 9
     };
+
+    var usedSpells = [];
     
     var manaSpent = 0;
     
@@ -121,7 +128,7 @@ var randomFight = () => {
         
         if (isPlayersTurn) {  
             player.hitPoints--;
-            if (player.hitPoints <= 0) return Infinity;
+            if (player.hitPoints <= 0) return {cost: Infinity};
                       
             var spell;
             var spellOptions = R.times(R.identity, spells.length);
@@ -133,16 +140,17 @@ var randomFight = () => {
             }
             
             if (spellOptions.length === 0)
-                return Infinity;
-            
+                return {cost: Infinity};
+
             spell.cast();
+            usedSpells.push(spell.name);
             manaSpent += spell.mana;
         } else {
             player.hitPoints -= R.max(1, boss.damage - player.armor);
         }
         
-        if (player.hitPoints <= 0) return Infinity;
-        if (boss.hitPoints <= 0) return manaSpent;
+        if (player.hitPoints <= 0) return {cost: Infinity};
+        if (boss.hitPoints <= 0) return {cost: manaSpent, spells: usedSpells};
         
         isPlayersTurn = !isPlayersTurn;
     }
@@ -158,7 +166,8 @@ var solution = (input) => {
     }
     
     console.log(costs.length);
-    return R.reduce(R.min, Infinity, costs);
+    var bestCase = R.reduce((a, x) => (a.cost < x.cost) ? a : x, Infinity, costs);
+    return bestCase.cost;
 };
 
 module.exports = solution;
